@@ -45,6 +45,7 @@ NSString* SelectedIndexPath;
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
+//creates an array of categories and retrieves information from delegate controller
 -(void) viewWillAppear:(BOOL)animated{
     if (index==1){
         myDelegate1 = (AppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -69,7 +70,7 @@ NSString* SelectedIndexPath;
         
     }
     [categories removeAllObjects];
-
+//Only shows categories that are present
     [self CategorizeLocations:NearbyLocations];
     if ([Food count]!=0){
         [categories addObject:@"Food"];
@@ -112,13 +113,16 @@ NSString* SelectedIndexPath;
             }
         }
         index=0;
+        [self.tableView reloadData];
+
     }
+
     else{
         [self.tableView reloadData];
     }
     
 }
-
+//categorizes different data based on Types array provided by Google Places API
 - (void) CategorizeLocations
 :(GooglePlace*)place{
     for (GooglePlace*place in NearbyLocations){
@@ -181,7 +185,7 @@ NSString* SelectedIndexPath;
     }
     NSLog(@"done with loop");
 }
-
+//insert information in table view controller
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     NSLog(@"does this work1");
@@ -196,6 +200,7 @@ NSString* SelectedIndexPath;
     NSLog(@"%lu",(unsigned long)[self.categories count]);
     return [self.categories count];
 }
+//chooses random location when button is pressed
 - (IBAction)SurpriseMe:(id)sender {
     int cat = arc4random_uniform([categories count]);
     NSString* Chosen = [categories objectAtIndex:cat];
@@ -230,7 +235,7 @@ NSString* SelectedIndexPath;
     SelectedPlace=RandomPlace;
     [self performSegueWithIdentifier:@"SurpriseMe" sender:self];
 }
-
+//shows information for category
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"does this work3");
@@ -244,10 +249,11 @@ NSString* SelectedIndexPath;
     
     return cell;
 }
-
+//unwind segue
 - (IBAction)FirstTipsBackToStart:(UIStoryboardSegue*) segue{
     NSLog(@"Returned again!");
 }
+
 - (BOOL) tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController{
     if ([viewController isKindOfClass:[MapViewController class]]){
         MapViewController *Map = (MapViewController* ) viewController;
@@ -260,7 +266,7 @@ NSString* SelectedIndexPath;
     SelectedIndexPath = [self.categories objectAtIndex:indexPath.row];
     [self performSegueWithIdentifier:@"showMoreDetails" sender:self];
 }
-
+//segues to next table view which has specific category location
  - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
      if ([segue.identifier isEqualToString:@"showMoreDetails"]){
         // NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];

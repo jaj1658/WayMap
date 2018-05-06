@@ -20,15 +20,15 @@
 
 @implementation UserProfileViewController
 
-@synthesize testLabel, userAddedPlaces, favoritePlaces;
+@synthesize userAddedPlaces, favoritePlaces;
 
--(void)configure:(NSString *)field {
-    
-    testLabel.text = field;
-}
+/*
+ Instantiate the current user, pulling data from Firebase of the places they have favorited and the places they have added on their own.
+ */
 -(void) viewWillAppear:(BOOL)animated{
     [userAddedPlaces removeAllObjects];
     [favoritePlaces removeAllObjects];
+    self.tabBarController.delegate=self;
     FIRUser *user = [FIRAuth auth].currentUser;
     
     self.ref = [[FIRDatabase database] reference];
@@ -39,7 +39,6 @@
             NSString *key = addedPlace.key;
             NSDictionary *addedPlacesDict = addedPlace.value;
             [addedPlacesDict objectForKey:key];
-            [self configure:[addedPlacesDict objectForKey:@"Name"]];
             [userAddedPlaces addObject:[addedPlacesDict objectForKey:@"Name"]];
             
         }
@@ -52,13 +51,15 @@
             NSString *key = favoritePlace.key;
             NSDictionary *favoritePlacesDict = favoritePlace.value;
             [favoritePlacesDict objectForKey:key];
-            [self configure:[favoritePlacesDict objectForKey:@"Name"]];
             [favoritePlaces addObject:[favoritePlacesDict objectForKey:@"Name"]];
         }
     }];
     
 }
 
+/*
+ Initialize arrays to store the names of the user's added places and their favorite places, so that this data may be passed to the UserData View Controller
+ */
 - (void)viewDidLoad {
     
     userAddedPlaces = [[NSMutableArray alloc]init];
@@ -71,6 +72,9 @@
     // Dispose of any resources that can be recreated.
 }
 
+/*
+ Pass all of the user's data that was retrieved in this view controller into the user data VC, depending on which segue is happening (aka whethere the Favorites or the User Added button was pressed)
+ */
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     if([segue.identifier isEqualToString:@"favoritesSegue"]){
         UserDataTableViewController *UDVC;
@@ -93,6 +97,9 @@
     
 }
 
+/*
+ Methods to allow the user to upload a profile photo either by opening their camera and taking on themselves, or choosing from their camera rolls.
+ */
 - (IBAction)ProfilePictureUpload:(id)sender {
     UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:@"Set Profile Picture" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
     
@@ -138,7 +145,24 @@
 
     
 }
-
+-(BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController{
+    if ([viewController isKindOfClass:[UINavigationController class]]){
+        UINavigationController*Tips1 = (UINavigationController*)viewController;
+        if ([Tips1.visibleViewController isKindOfClass:[TipsFirstTableViewController class]]){TipsFirstTableViewController*Tips=(TipsFirstTableViewController*)Tips1.visibleViewController;
+            //Tips.NearbyLocations=self.LocationsNearby;
+            //Tips.userLocation=self.userLocation;
+            Tips.index=1;
+            NSLog(@"Switching view controllers to TipsFirst");
+        }
+        else{
+            NSLog(@"Type of current view %@",NSStringFromClass([Tips1.visibleViewController class]));
+        }
+    }
+    else{
+        NSLog(@"very confused");
+    }
+    return YES;
+}
 -(void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
     [picker dismissViewControllerAnimated:YES completion:NULL];
 }
