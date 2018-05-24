@@ -29,6 +29,8 @@ WayMap is an app that uses GPS features to track a user’s most current area, a
 3. If running on Simulator, ensure that Debug>Location>None is changed to a valid location (e.g. Apple).
     **Camera feature will *not* work on Simulator.**
 
+Note: **Run on iPhone X Simulator for optimal UI**
+
 ****WAYMAP Sources****
 
 Google Places API - Uses Google's API to retrieve places nearby. Because we use the likelihood list, the location list given is limited. To gain more locations nearby, we would have to alter the use of API to retrieve more locations.
